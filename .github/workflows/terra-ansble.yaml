@@ -11,7 +11,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: /home/shrutikulshreshta   # all steps use this folder
+        working-directory: /home/kcluser13 # all steps use this folder
 
     steps:
       - name: Checkout repository
@@ -22,7 +22,7 @@ jobs:
       - name: Terraform Init
      
         run: |
-            cd /home/shrutikulshreshta/
+            cd /home/kcluser13/
             terraform init
             terraform apply --auto-approve
             terraform output external_ip  > ip.txt
@@ -34,11 +34,11 @@ jobs:
       
       - name: Prepare Ansible inventory
         run: |
-          cd /home/shrutikulshreshta/
+          cd /home/kcluser13/
           echo "[centos9]" > inventory
           if [ -s ip.txt ]; then
             while IFS= read -r ip; do
-              echo "$ip ansible_user=shrutikulshreshta host_key_checking = False become_user=root become_method=sudo ansible_ssh_private_key_file=home/shruti/.ssh/id_rsa ansible_python_interpreter=/usr/bin/python3 ansible_become=true" >> inventory
+              echo "$ip ansible_user=shrutikulshreshta host_key_checking = False become_user=root become_method=sudo ansible_ssh_private_key_file=home/kcluser13/.ssh/id_ed25519.pub ansible_python_interpreter=/usr/bin/python3 ansible_become=true" >> inventory
             done < ip.txt
           else
             echo "ip.txt is empty!"
@@ -46,11 +46,11 @@ jobs:
   
       - name: Wait up to 3 minutes for SSH
         run: |
-          for ip in $(cat /home/shrutikulshreshta/ip.txt); do
+          for ip in $(cat /home/kcluser13/ip.txt); do
             echo "Waiting for SSH on $ip..."
             timeout=180
             waited=0
-            until ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -q shrutikulshreshta@$ip 'echo ok' 2>/dev/null; do
+            until ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -q edsisonsa@$ip 'echo ok' 2>/dev/null; do
               sleep 5
               waited=$((waited + 5))
               echo "Still waiting for $ip... (${waited}s)"
